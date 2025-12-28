@@ -1,0 +1,162 @@
+:root{
+	--hover-color: rgb(185, 175, 61);
+	--secondary-hover-color: rgb(214, 66, 66);
+	--main-color: rgb(17, 16, 47);
+	--div-color: rgb(82, 96, 129);
+}
+
+*{
+	color: white;
+}
+
+body{
+	background-color: var(--main-color);
+	margin: 0;
+}
+
+div{
+	margin: 5px;
+}
+
+button{
+	appearance: none;
+	background-color: var(--main-color);
+	border: 1px solid black;
+	padding: 5px 10px;
+	border-radius: 3px;
+	cursor: pointer;
+	margin: 2px;
+}
+
+button:hover{
+	background-color: var(--hover-color);
+	color: black;
+}
+
+#menu{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 15px;
+	background-color: var(--div-color);
+	padding: 5px 10px;
+	margin: 0px;
+	margin-bottom: 5px;
+}
+
+main{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: baseline;
+}
+
+.main_div{
+	background-color: var(--div-color);
+	padding: 10px;
+	margin: 5px;
+}
+
+.head_div{
+	display: grid;
+	gap: 2px;
+	margin-bottom: 5px;
+}
+
+.name{
+	grid-column-start: 2;
+	grid-column-end: 4;
+	margin: 5px;
+}
+
+.toggle_button{
+	grid-column-start: 1;
+	grid-column-end: 2;
+}
+
+.body_div{
+	display: grid;
+	align-items: center;
+	gap: 5px;
+	border-top: 2px solid black;
+}
+
+.board_table_div{
+	grid-column-start: 1;
+	grid-column-end: 3;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 5px;
+}
+
+.board_table{
+	border-collapse: collapse;
+	margin-block: 10px;
+	font-family: Consolas, 'Courier New', monospace;
+	font-size: 20pt;
+}
+
+.board_table td{
+	width: 5vw;
+	height: 5vw;
+	text-align: center;
+	cursor: pointer;
+}
+
+@media only screen and (max-width: 1000px){
+	.board_table td{
+		width: 50px;
+		height: 50px;
+	}
+}
+
+.board_table td:hover{
+	background-color: var(--hover-color);
+	color: black;
+}
+
+.board_table td:hover.taken{
+	background-color: var(--secondary-hover-color);
+	color: black;
+}
+
+.board_table tr:nth-child(2){
+	border-block: 1px solid black;
+}
+
+.board_table tr td:nth-child(2){
+	border-inline: 1px solid black;
+}
+
+.data_div > *, .transformations_div > *, .markers_div > *{
+	margin: 2px;
+}
+
+.data_div{
+	grid-column-start: 1;
+	grid-column-end: 3;
+	padding: 3px;
+	border-block: 2px solid black;
+}
+
+.transformations_div, .markers_div{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+select{
+	background-color: var(--main-color);
+}
+
+.markers_div input{
+	text-align: center;
+	width: 12pt;
+	background-color: var(--main-color);
+	border: black;
+}
+
+.hidden{
+	display: none;
+}
