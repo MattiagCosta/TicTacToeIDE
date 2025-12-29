@@ -1,6 +1,6 @@
 :root{
-	--hover-color: rgb(185, 175, 61);
-	--secondary-hover-color: rgb(214, 66, 66);
+	--selection-color: rgb(185, 175, 61);
+	--danger-color: rgb(214, 66, 66);
 	--main-color: rgb(17, 16, 47);
 	--div-color: rgb(82, 96, 129);
 }
@@ -18,6 +18,10 @@ div{
 	margin: 5px;
 }
 
+p{
+	margin-block: 2px;
+}
+
 button{
 	appearance: none;
 	background-color: var(--main-color);
@@ -29,8 +33,12 @@ button{
 }
 
 button:hover{
-	background-color: var(--hover-color);
+	background-color: var(--selection-color);
 	color: black;
+}
+
+button:hover.danger_button{
+	background-color: var(--danger-color);
 }
 
 #menu{
@@ -55,6 +63,7 @@ main{
 	background-color: var(--div-color);
 	padding: 10px;
 	margin: 5px;
+	border-radius: 3px;
 }
 
 .head_div{
@@ -63,15 +72,36 @@ main{
 	margin-bottom: 5px;
 }
 
+.duplicate_button{
+	grid-column-start: 1;
+	grid-column-end: 2;
+}
+
 .name{
 	grid-column-start: 2;
 	grid-column-end: 4;
 	margin: 5px;
+	text-align: center;
+}
+
+.delete_button{
+	grid-column-start: 1;
+	grid-column-end: 2;
+}
+
+.settings_button{
+	grid-column-start: 2;
+	grid-column-end: 4;
+}
+
+.clear_button{
+	grid-column-start: 1;
+	grid-column-end: 2;
 }
 
 .toggle_button{
-	grid-column-start: 1;
-	grid-column-end: 2;
+	grid-column-start: 2;
+	grid-column-end: 4;
 }
 
 .body_div{
@@ -95,6 +125,7 @@ main{
 	margin-block: 10px;
 	font-family: Consolas, 'Courier New', monospace;
 	font-size: 20pt;
+	cursor: pointer;
 }
 
 .board_table td{
@@ -102,6 +133,7 @@ main{
 	height: 5vw;
 	text-align: center;
 	cursor: pointer;
+	cursor: inherit;
 }
 
 @media only screen and (max-width: 1000px){
@@ -109,16 +141,6 @@ main{
 		width: 50px;
 		height: 50px;
 	}
-}
-
-.board_table td:hover{
-	background-color: var(--hover-color);
-	color: black;
-}
-
-.board_table td:hover.taken{
-	background-color: var(--secondary-hover-color);
-	color: black;
 }
 
 .board_table tr:nth-child(2){
@@ -155,6 +177,28 @@ select{
 	width: 12pt;
 	background-color: var(--main-color);
 	border: black;
+}
+
+.settings_div{
+	border-top: 2px solid black;
+}
+
+.type_div p{
+	display: inline;
+}
+
+.board_table td:hover.hover{
+	background-color: var(--selection-color);
+	color: black;
+}
+
+.board_table td:hover.hover.taken{
+	background-color: var(--danger-color);
+	color: black;
+}
+
+.hidden_cursor{
+	cursor: none;
 }
 
 .hidden{
