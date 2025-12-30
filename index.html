@@ -22,9 +22,12 @@
 			AddTicTacToeDefaultId();
 		});
 		document.getElementById('deleteEveryTicTacToe').addEventListener('click', function(){
-			while(id_number > 0){
-				id_number--;
-				RemoveTicTacToe(id_prefix + id_number);
+			let ids = [];
+			for(let t of TicTacToe_list){
+				ids.push(t.id);
+			}
+			for(let id of ids){
+				RemoveTicTacToe(id);
 			}
 			id_number = 0;
 		});

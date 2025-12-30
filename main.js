@@ -2,23 +2,43 @@ var id_prefix = 'Tic-Tac-Toe-';
 var id_number = 0;
 var TicTacToe_list = [];
 
-const default_info = {empty:'',first_player:'X',second_player:'O',numeric_sequence:''};
+const default_info = {empty:'',first_player:'X',second_player:'O',numeric_sequence:'',body_div_visibility:true,settings_div_visibility:false,settings:[]};
 
 const settings = [
 	{
+		type:'Show alignments',
+		option:'allowed',
+		targets:['.square']
+	},
+	{
 		type:'Hide',
 		option:'hidden',
-		targets:['undo_move_button','data_div','numeric_sequence','board','alignments','winner','universal_sequence','transformations_div','markers_div']
+		targets:['.control_div','.data_div','.transformations_div','.markers_div']
+	},
+	{
+		type:'Hide controls',
+		option:'hidden',
+		targets:['.undo_move_button','.clear_board_button']
+	},
+	{
+		type:'Hide data',
+		option:'hidden',
+		targets:['.numeric_sequence','.board','.alignments','.winner','.universal_sequence']
 	},
 	{
 		type:'Unable hover',
 		option:'hover',
-		targets:['board_table td']
+		targets:['.square']
+	},
+	{
+		type:'Unable danger hover',
+		option:'danger_hover',
+		targets:['.square']
 	},
 	{
 		type:'Disable cursor',
 		option:'hidden_cursor',
-		targets:['board_table']
+		targets:['.board_table']
 	}
 ];
 
@@ -70,14 +90,14 @@ function GetTicTacToeIndex(id){
 function DuplicateTicTacToe(from_id, to_id){
 	const t = GetTicTacToe(from_id);
 	if(t){
-		AddTicTacToe(to_id, t.info)
+		AddTicTacToe(to_id, structuredClone(t.info))
 	}
 }
 
 function DuplicateTicTacToeDefaultId(from_id){
 	const t = GetTicTacToe(from_id);
 	if(t){
-		AddTicTacToeDefaultId(t.info);
+		AddTicTacToeDefaultId(structuredClone(t.info));
 	}
 }
 
@@ -86,6 +106,19 @@ function RemoveTicTacToe(id){
 	if(index !== null){
 		document.getElementById(id).remove();
 		TicTacToe_list.splice(index, 1);
+	}
+}
+
+function FillInfoSettings(info){
+	for(let setting of settings){
+		if(info.settings[setting.type] === undefined){
+			info.settings[setting.type] = {};
+		}
+		for(let target of setting.targets){
+			if(info.settings[setting.type][target] === undefined){
+				info.settings[setting.type][target] = false;
+			}
+		}
 	}
 }
 
@@ -162,8 +195,9 @@ function CreateUniversalSequence(numeric_sequence){
 }
 
 class TicTacToe{
-	constructor(id, info = {...default_info}){
+	constructor(id, info = structuredClone(default_info)){
 		this.id = id
+		FillInfoSettings(info);
 		this.info = info;
 		this.AppendDiv(id);
 		this.Update();
@@ -274,21 +308,38 @@ class TicTacToe{
 		const head_div = document.createElement('div');
 		head_div.classList.add('head_div');
 
+		const name = document.createElement('p');
+		name.classList.add('name');
+		name.innerHTML = id;
+		name.contentEditable = true;
+
 		const toggle_button = document.createElement('button');
 		toggle_button.classList.add('toggle_button');
 		toggle_button.innerHTML = 'Toggle';
 		toggle_button.addEventListener('click', function(){
 			if(body_div.classList.contains('hidden')){
+				t.info.body_div_visibility = true;
 				body_div.classList.remove('hidden');
 			}
 			else{
+				t.info.body_div_visibility = false;
 				body_div.classList.add('hidden');
 			}
 		});
 
-		const name = document.createElement('p');
-		name.classList.add('name');
-		name.innerHTML = id;
+		const settings_button = document.createElement('button');
+		settings_button.classList.add('settings_button');
+		settings_button.innerHTML = 'Settings';
+		settings_button.addEventListener('click', function(){
+			if(settings_div.classList.contains('hidden')){
+				t.info.settings_div_visibility = true;
+				settings_div.classList.remove('hidden');
+			}
+			else{
+				t.info.settings_div_visibility = false;
+				settings_div.classList.add('hidden');
+			}
+		});
 
 		const delete_button = document.createElement('button');
 		delete_button.classList.add('delete_button');
@@ -305,32 +356,35 @@ class TicTacToe{
 			DuplicateTicTacToeDefaultId(t.id);
 		});
 
-		const clear_button = document.createElement('button');
-		clear_button.classList.add('clear_button');
-		clear_button.classList.add('danger_button');
-		clear_button.innerHTML = 'Clear';
-		clear_button.addEventListener('click', function(){
-			t.info = {...default_info};
+		const reset_button = document.createElement('button');
+		reset_button.classList.add('reset_button');
+		reset_button.classList.add('danger_button');
+		reset_button.innerHTML = 'Reset';
+		reset_button.addEventListener('click', function(){
+			t.info = structuredClone(default_info);
+			const checkboxes = settings_div.getElementsByClassName('setting_checkbox');
+			for(let checkbox of checkboxes){
+				checkbox.checked = false;
+			}
+			FillInfoSettings(t.info);
+			for(let setting of settings){
+				for(let target of setting.targets){
+					const input_id = id + setting.type + target;
+					const input = document.getElementById(input_id);
+					if(t.info.settings[setting.type][target] !== input.checked){
+						input.checked = t.info.settings[setting.type][target];
+						input.dispatchEvent(new Event('change'));
+					}
+				}
+			}
 			t.Update();
-		});
-
-		const settings_button = document.createElement('button');
-		settings_button.classList.add('settings_button');
-		settings_button.innerHTML = 'Settings';
-		settings_button.addEventListener('click', function(){
-			if(settings_div.classList.contains('hidden')){
-				settings_div.classList.remove('hidden');
-			}
-			else{
-				settings_div.classList.add('hidden');
-			}
 		});
 
 		head_div.appendChild(duplicate_button);
 		head_div.appendChild(name);
 		head_div.appendChild(delete_button);
 		head_div.appendChild(settings_button);
-		head_div.appendChild(clear_button);
+		head_div.appendChild(reset_button);
 		head_div.appendChild(toggle_button);
 
 		const body_div = document.createElement('div');
@@ -364,6 +418,9 @@ class TicTacToe{
 		}
 		board_table_div.appendChild(board_table);
 
+		const control_div = document.createElement('div');
+		control_div.classList.add('control_div');
+
 		const undo_move_button = document.createElement('button');
 		undo_move_button.classList.add('undo_move_button');
 		undo_move_button.innerHTML = 'Undo last move';
@@ -371,7 +428,19 @@ class TicTacToe{
 			t.UndoLastMove();
 			t.Update();
 		});
-		board_table_div.appendChild(undo_move_button);
+		control_div.appendChild(undo_move_button);
+
+		const clear_board_button = document.createElement('button');
+		clear_board_button.classList.add('clear_board_button');
+		clear_board_button.classList.add('danger_button');
+		clear_board_button.innerHTML = 'Clear board';
+		clear_board_button.addEventListener('click', function(){
+			t.info.numeric_sequence = '';
+			t.Update();
+		});
+		control_div.appendChild(clear_board_button);
+
+		board_table_div.appendChild(control_div);
 
 		body_div.appendChild(board_table_div);
 
@@ -423,6 +492,10 @@ class TicTacToe{
 		transformations_div.appendChild(transformation_button);
 
 		body_div.appendChild(transformations_div);
+		body_div.classList.add('body_div');
+		if(this.info.body_div_visibility == false){
+			body_div.classList.add('hidden');
+		}
 
 		const markers_div = document.createElement('div');
 		markers_div.classList.add('markers_div');
@@ -464,9 +537,11 @@ class TicTacToe{
 
 		const settings_div = document.createElement('div');
 		settings_div.classList.add('settings_div');
-		settings_div.classList.add('hidden');
+		if(this.info.settings_div_visibility == false){
+			settings_div.classList.add('hidden');
+		}
 		const callback_function = function(selector, option){
-			const targets = body_div.querySelectorAll(`.${selector}`);
+			const targets = body_div.querySelectorAll(selector);
 			for(let target of targets){
 				if(target.classList.contains(option)){
 					target.classList.remove(option);
@@ -477,6 +552,7 @@ class TicTacToe{
 			}
 		};
 		for(let setting of settings){
+			this.info.settings
 			const setting_div = document.createElement('div');
 			const type_div = document.createElement('div');
 			type_div.classList.add('type_div');
@@ -484,6 +560,7 @@ class TicTacToe{
 			type.innerHTML = setting.type;
 			type_div.appendChild(type);
 			const checkbox = document.createElement('input');
+			checkbox.classList.add('setting_checkbox');
 			checkbox.type = 'checkbox';
 			checkbox.checked = false;
 			checkbox.addEventListener('change', function(){
@@ -498,14 +575,18 @@ class TicTacToe{
 			type_div.appendChild(checkbox);
 			setting_div.appendChild(type_div);
 			for(let target of setting.targets){
+				if(this.info.settings[setting.type][target]){
+					callback_function(target, setting.option);
+				}
 				const target_div = document.createElement('div');
 				const target_input = document.createElement('input');
 				const target_input_id = id + setting.type + target;
 				target_input.id = target_input_id;
 				target_input.type = 'checkbox';
-				target_input.checked = setting.hide;
+				target_input.checked = this.info.settings[setting.type][target];
 				target_input.addEventListener('change', function(){
 					callback_function(target, setting.option);
+					t.info.settings[setting.type][target] = this.checked;
 				});
 				target_div.appendChild(target_input);
 				const target_label = document.createElement('label');
@@ -531,6 +612,7 @@ class TicTacToe{
 		for(let i = 0; i < 9; i++){
 			const square = document.querySelector(`#${this.id} .square${i}`);
 			square.classList.remove('taken');
+			square.classList.remove('alignment_square');
 			let marker = this.info.empty;
 			if(board[i] != '0'){
 				square.classList.add('taken');
@@ -545,6 +627,11 @@ class TicTacToe{
 		}
 		const alignments = this.GetAlignments(this.info.numeric_sequence);
 		document.querySelector(`#${this.id} .alignments`).innerHTML = 'Alignments: ' + JSON.stringify(alignments);
+		for(let alignment of alignments){
+			for(let numeric_id of alignment){
+				document.querySelector(`#${this.id} .square${numeric_id}`).classList.add('alignment_square');
+			}
+		}
 		const winner = this.GetWinner();
 		document.querySelector(`#${this.id} .winner`).innerHTML = 'Winner: ' + winner;
 		const universal_sequence = CreateUniversalSequence(this.info.numeric_sequence);
