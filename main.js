@@ -26,12 +26,12 @@ const settings = [
 		targets:['.numeric_sequence','.board','.alignments','.winner','.universal_sequence']
 	},
 	{
-		type:'Unable hover',
+		type:'Enable hover',
 		option:'hover',
 		targets:['.square']
 	},
 	{
-		type:'Unable danger hover',
+		type:'Enable danger hover',
 		option:'danger_hover',
 		targets:['.square']
 	},
