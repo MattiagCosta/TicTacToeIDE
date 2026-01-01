@@ -9,13 +9,55 @@
 	<script src='main.js'></script>
 </head>
 <body>
-	<div id="menu">
-		<h1>Tic-Tac-Toe IDE</h1>
-		<div>
-			<button id="newTicTacToe">New</button>
-			<button id="deleteEveryTicTacToe" class="danger_button">Delete all</button>
+	<header>
+		<div id="menu">
+			<h1>Tic-Tac-Toe IDE</h1>
+			<div>
+				<button id="newTicTacToe">New</button>
+				<button id="deleteEveryTicTacToe" class="danger_button">Delete all</button>
+				<button id="toggleReferences">References</button>
+			</div>
 		</div>
-	</div>
+		<div id="references" class="hidden">
+			<h2>Transformations</h2>
+			<ul id="transformations_list"></ul>
+			<div id="addTransformationDiv">
+				<div>
+					<label for="transformationName">Transformation name</label>
+					<input type="text" id="transformationName" value="custom">
+				</div>
+				<div>
+					<label for="transformationAfter">After</label>
+					<input type="text" id="transformationAfter" class="nine_chars_input" maxlength="9" value="012345678">
+				</div>
+				<button id="addTransformation">Add transformation</button>
+			</div>
+			
+			<h2>Point of views</h2>
+			<div>
+				<label for="position_id">position_id</label>
+				<input type="text" id="position_id" class="one_char_input" maxlength="1">
+			</div>
+			<div>
+				<label for="initial_point_of_view">initial_point_of_view</label>
+				<input type="text" id="initial_point_of_view" class="nine_chars_input" maxlength="9">
+			</div>
+			<div>
+				<label for="center_point_of_view">center_point_of_view</label>
+				<input type="text" id="center_point_of_view" class="nine_chars_input" maxlength="9">
+			</div>
+			<div>
+				<label for="middle_point_of_view">middle_point_of_view</label>
+				<input type="text" id="middle_point_of_view" class="nine_chars_input" maxlength="9">
+			</div>
+			<div>
+				<label for="corner_point_of_view">corner_point_of_view</label>
+				<input type="text" id="corner_point_of_view" class="nine_chars_input" maxlength="9">
+			</div>
+			
+		</div>
+	</header>
+	
 	<main id="main"></main>
 	<script>
 		document.getElementById('newTicTacToe').addEventListener('click', function(){
@@ -31,6 +73,85 @@
 			}
 			id_number = 0;
 		});
+		document.getElementById('toggleReferences').addEventListener('click', function(){
+			const references = document.getElementById('references');
+			references.classList.toggle('hidden');
+		});
+
+		document.getElementById('addTransformation').addEventListener('click', function(){
+			const name_element = document.getElementById('transformationName');
+			if(name_element.value.length == 0){
+				name_element.value = 'custom';
+			}
+			const after_element = document.getElementById('transformationAfter');
+			if(after_element.value.length != 9){
+				after_element.value = '012345678';
+			}
+			const name = name_element.value;
+			let transformation = {};
+			for(let id of '012345678'){
+				transformation[id] = after_element.value[id];
+			}
+			transformations[name] = transformation;
+			AppendTransformationListItem(name, transformation);
+		});
+		
+		document.getElementById('position_id').addEventListener('change', function(){
+			if(this.value.length == 1){
+				position_id = this.value;
+			}
+			else{
+				this.value = position_id;
+			}
+			console.log(position_id);
+		});
+		document.getElementById('initial_point_of_view').addEventListener('change', function(){
+			if(this.value.length == 9){
+				initial_point_of_view = this.value;
+			}
+			else{
+				this.value = initial_point_of_view;
+			}
+			console.log(initial_point_of_view);
+		});
+		document.getElementById('center_point_of_view').addEventListener('change', function(){
+			if(this.value.length == 9){
+				center_point_of_view = this.value;
+			}
+			else{
+				this.value = center_point_of_view;
+			}
+			console.log(center_point_of_view);
+		});
+		document.getElementById('middle_point_of_view').addEventListener('change', function(){
+			if(this.value.length == 9){
+				middle_point_of_view = this.value;
+			}
+			else{
+				this.value = middle_point_of_view;
+			}
+			console.log(middle_point_of_view);
+		});
+		document.getElementById('corner_point_of_view').addEventListener('change', function(){
+			if(this.value.length == 9){
+				corner_point_of_view = this.value;
+			}
+			else{
+				this.value = corner_point_of_view;
+			}
+			console.log(corner_point_of_view);
+		});
+
+		for(let transformation_name in transformations){
+			AppendTransformationListItem(transformation_name, transformations[transformation_name]);
+		}
+
+		document.getElementById('position_id').value = position_id;
+		document.getElementById('initial_point_of_view').value = initial_point_of_view;
+		document.getElementById('center_point_of_view').value = center_point_of_view;
+		document.getElementById('middle_point_of_view').value = middle_point_of_view;
+		document.getElementById('corner_point_of_view').value = corner_point_of_view;
+
 		AddTicTacToeDefaultId();
 	</script>
 </body>

@@ -2,7 +2,7 @@ var id_prefix = 'Tic-Tac-Toe-';
 var id_number = 0;
 var TicTacToe_list = [];
 
-const default_info = {empty:'',first_player:'X',second_player:'O',numeric_sequence:'',body_div_visibility:true,settings_div_visibility:false,settings:[]};
+const default_info = {empty:'',first_player:'X',second_player:'O',numeric_sequence:'',body_div_visibility:true,settings_div_visibility:false,settings:[],number_of_transformations:0};
 
 const settings = [
 	{
@@ -42,7 +42,7 @@ const settings = [
 	}
 ];
 
-const transformations = {
+var transformations = {
 	'counterclockwise90rotation':{'0':'6','1':'3','2':'0','3':'7','4':'4','5':'1','6':'8','7':'5','8':'2'},
 	'clockwise90rotation':{'0':'2','1':'5','2':'8','3':'1','4':'4','5':'7','6':'0','7':'3','8':'6'},
 	'0reflection':{'0':'6','1':'7','2':'8','3':'3','4':'4','5':'5','6':'0','7':'1','8':'2'},
@@ -51,10 +51,11 @@ const transformations = {
 	'135reflection':{'0':'0','1':'3','2':'6','3':'1','4':'4','5':'7','6':'2','7':'5','8':'8'}
 };
 
-const initial_point_of_view = "CBCBABCBC";
-const center_point_of_view = "EDEDPDEDE";
-const middle_point_of_view = "HPHIGIJFJ";
-const corner_point_of_view = "PMNMKONOL";
+var position_id = 'P'
+var initial_point_of_view = 'CBCBABCBC';
+var center_point_of_view = 'EDEDPDEDE';
+var middle_point_of_view = 'HPHIGIJFJ';
+var corner_point_of_view = 'PMNMKONOL';
 
 function AddTicTacToe(id, info = null){
 	TicTacToe_list.push(new TicTacToe(id, info ? info : undefined));
@@ -122,6 +123,33 @@ function FillInfoSettings(info){
 	}
 }
 
+function AppendTransformationListItem(transformation_name, transformation){
+	const li = document.createElement('li');
+
+	const name_span = document.createElement('span');
+	name_span.innerHTML = transformation_name;
+
+	const transformation_span = document.createElement('span');
+	transformation_span.innerHTML = '012345678 → ';
+	for(let id in transformation){
+		transformation_span.innerHTML += transformation[id];
+	}
+
+	const remove_button = document.createElement('button');
+	remove_button.classList.add('danger_button');
+	remove_button.innerHTML = 'Remove';
+	remove_button.addEventListener('click', function(){
+		delete transformations[transformation_name];
+		li.remove();
+	});
+
+	li.appendChild(name_span);
+	li.appendChild(transformation_span);
+	li.appendChild(remove_button);
+
+	document.getElementById('transformations_list').appendChild(li);
+}
+
 function RotatePointOfView(point_of_view){
 	let rotated_point_of_view = "";
 	rotated_point_of_view += point_of_view[2];
@@ -138,7 +166,7 @@ function RotatePointOfView(point_of_view){
 
 function MatchPointOfView(point_of_view, desired_square_numeric_id){
 	for(let i = 0; i < 4; i++){
-		if(point_of_view[desired_square_numeric_id] == 'P'){
+		if(point_of_view[desired_square_numeric_id] == position_id){
 			break;
 		}
 		point_of_view = RotatePointOfView(point_of_view);
@@ -380,12 +408,20 @@ class TicTacToe{
 			t.Update();
 		});
 
+		const update_button = document.createElement('button');
+		update_button.classList.add('update_button');
+		update_button.innerHTML = 'Force update';
+		update_button.addEventListener('click', function(){
+			t.Update();
+		});
+
 		head_div.appendChild(duplicate_button);
 		head_div.appendChild(name);
 		head_div.appendChild(delete_button);
 		head_div.appendChild(settings_button);
 		head_div.appendChild(reset_button);
 		head_div.appendChild(toggle_button);
+		head_div.appendChild(update_button);
 
 		const body_div = document.createElement('div');
 		body_div.classList.add('body_div');
@@ -472,21 +508,14 @@ class TicTacToe{
 		const transformations_div = document.createElement('div');
 		transformations_div.classList.add('transformations_div');
 
-		const transformations = ['counterclockwise90rotation','clockwise90rotation','0reflection','90reflection','45reflection','135reflection']
-		const select = document.createElement('select');
-		select.classList.add('transformation');
-		for(let transformation of transformations){
-			const option = document.createElement('option');
-			option.value = transformation;
-			option.innerHTML = transformation;
-			select.appendChild(option);
-		}
-		transformations_div.appendChild(select);
+		const transformations_select = document.createElement('select');
+		transformations_select.classList.add('transformations_select');
+		transformations_div.appendChild(transformations_select);
 
 		const transformation_button = document.createElement('button');
 		transformation_button.innerHTML = 'Apply transformation';
 		transformation_button.addEventListener('click', function(){
-			t.TransformNumericSequence(document.querySelector(`#${t.id} .transformation`).value);
+			t.TransformNumericSequence(document.querySelector(`#${t.id} .transformations_select`).value);
 			t.Update();
 		});
 		transformations_div.appendChild(transformation_button);
@@ -502,6 +531,7 @@ class TicTacToe{
 
 		const input_empty = document.createElement('input');
 		input_empty.classList.add('empty');
+		input_empty.classList.add('one_char_input');
 		input_empty.type = 'text';
 		input_empty.maxLength = 1;
 		input_empty.value = this.info.empty;
@@ -513,6 +543,7 @@ class TicTacToe{
 
 		const input_first_player = document.createElement('input');
 		input_first_player.classList.add('first_player');
+		input_first_player.classList.add('one_char_input');
 		input_first_player.type = 'text';
 		input_first_player.maxLength = 1;
 		input_first_player.value = this.info.first_player;
@@ -524,6 +555,7 @@ class TicTacToe{
 
 		const input_second_player = document.createElement('input');
 		input_second_player.classList.add('second_player');
+		input_second_player.classList.add('one_char_input');
 		input_second_player.type = 'text';
 		input_second_player.maxLength = 1;
 		input_second_player.value = this.info.second_player;
@@ -543,12 +575,7 @@ class TicTacToe{
 		const callback_function = function(selector, option){
 			const targets = body_div.querySelectorAll(selector);
 			for(let target of targets){
-				if(target.classList.contains(option)){
-					target.classList.remove(option);
-				}
-				else{
-					target.classList.add(option);
-				}
+				target.classList.toggle(option);
 			}
 		};
 		for(let setting of settings){
@@ -606,6 +633,19 @@ class TicTacToe{
 	}
 
 	Update(){
+		const current_number_of_transformations = Object.keys(transformations).length;
+		if(this.number_of_transformations != current_number_of_transformations){
+			const transformations_select = document.querySelector(`#${this.id} .transformations_select`);
+			transformations_select.innerHTML = '';
+			for(let transformation in transformations){
+				const option = document.createElement('option');
+				option.value = transformation;
+				option.innerHTML = transformation;
+				transformations_select.appendChild(option);
+			}
+			this.number_of_transformations = current_number_of_transformations;
+		}
+		
 		document.querySelector(`#${this.id} .numeric_sequence`).innerHTML = 'Numeric sequence: ' + this.info.numeric_sequence;
 		const board = this.GetBoard(this.info.numeric_sequence);
 		document.querySelector(`#${this.id} .board`).innerHTML = 'Board: ' + board;

@@ -41,15 +41,58 @@ button:hover.danger_button{
 	background-color: var(--danger-color);
 }
 
+input{
+	background-color: var(--main-color);
+	border: black;
+	font-family: monospace;
+}
+
+.one_char_input{
+	text-align: center;
+	width: 12pt;
+}
+
+.nine_chars_input{
+	text-align: center;
+	width: calc(12pt * 5);
+}
+
+header{
+	background-color: var(--div-color);
+	padding: 5px 10px;
+	margin: 0px;
+	margin-bottom: 5px;
+}
+
 #menu{
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	gap: 15px;
-	background-color: var(--div-color);
-	padding: 5px 10px;
-	margin: 0px;
-	margin-bottom: 5px;
+}
+
+#references{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 2px;
+}
+
+#references.hidden{
+	display: none;
+}
+
+#transformations_list span{
+	margin-inline: 5px;
+}
+
+#addTransformationDiv{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 3px;
 }
 
 main{
@@ -104,6 +147,11 @@ main{
 	grid-column-end: 4;
 }
 
+.update_button{
+	grid-column-start: 1;
+	grid-column-end: 4;
+}
+
 .body_div{
 	display: grid;
 	align-items: center;
@@ -123,7 +171,7 @@ main{
 .board_table{
 	border-collapse: collapse;
 	margin-block: 10px;
-	font-family: Consolas, 'Courier New', monospace;
+	font-family: monospace;
 	font-size: 20pt;
 	cursor: pointer;
 }
@@ -170,13 +218,6 @@ main{
 
 select{
 	background-color: var(--main-color);
-}
-
-.markers_div input{
-	text-align: center;
-	width: 12pt;
-	background-color: var(--main-color);
-	border: black;
 }
 
 .settings_div{
