@@ -8,7 +8,7 @@ const settings = [
 	{
 		type:'Show alignments',
 		option:'allowed',
-		targets:['.square']
+		targets:['.cell']
 	},
 	{
 		type:'Hide',
@@ -28,12 +28,12 @@ const settings = [
 	{
 		type:'Enable hover',
 		option:'hover',
-		targets:['.square']
+		targets:['.cell']
 	},
 	{
 		type:'Enable danger hover',
 		option:'danger_hover',
-		targets:['.square']
+		targets:['.cell']
 	},
 	{
 		type:'Disable cursor',
@@ -164,9 +164,9 @@ function RotatePointOfView(point_of_view){
 	return rotated_point_of_view
 }
 
-function MatchPointOfView(point_of_view, desired_square_numeric_id){
+function MatchPointOfView(point_of_view, desired_cell_numeric_id){
 	for(let i = 0; i < 4; i++){
-		if(point_of_view[desired_square_numeric_id] == position_id){
+		if(point_of_view[desired_cell_numeric_id] == position_id){
 			break;
 		}
 		point_of_view = RotatePointOfView(point_of_view);
@@ -435,8 +435,8 @@ class TicTacToe{
 			const tr = document.createElement('tr');
 			for(let j = 0; j < 3; j++){
 				const td = document.createElement('td');
-				td.classList.add('square');
-				td.classList.add('square' + (3*i+j));
+				td.classList.add('cell');
+				td.classList.add('cell' + (3*i+j));
 				td.addEventListener('click', function(){
 					if(this.classList.contains('taken')){
 						t.RemoveMove(3*i+j);
@@ -650,12 +650,12 @@ class TicTacToe{
 		const board = this.GetBoard(this.info.numeric_sequence);
 		document.querySelector(`#${this.id} .board`).innerHTML = 'Board: ' + board;
 		for(let i = 0; i < 9; i++){
-			const square = document.querySelector(`#${this.id} .square${i}`);
-			square.classList.remove('taken');
-			square.classList.remove('alignment_square');
+			const cell = document.querySelector(`#${this.id} .cell${i}`);
+			cell.classList.remove('taken');
+			cell.classList.remove('alignment_cell');
 			let marker = this.info.empty;
 			if(board[i] != '0'){
-				square.classList.add('taken');
+				cell.classList.add('taken');
 			}
 			if(board[i] == '1'){
 				marker = this.info.first_player;
@@ -663,13 +663,13 @@ class TicTacToe{
 			else if(board[i] == '2'){
 				marker = this.info.second_player;
 			}
-			square.innerHTML = marker;
+			cell.innerHTML = marker;
 		}
 		const alignments = this.GetAlignments(this.info.numeric_sequence);
 		document.querySelector(`#${this.id} .alignments`).innerHTML = 'Alignments: ' + JSON.stringify(alignments);
 		for(let alignment of alignments){
 			for(let numeric_id of alignment){
-				document.querySelector(`#${this.id} .square${numeric_id}`).classList.add('alignment_square');
+				document.querySelector(`#${this.id} .cell${numeric_id}`).classList.add('alignment_cell');
 			}
 		}
 		const winner = this.GetWinner();

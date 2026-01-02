@@ -93,7 +93,10 @@
 				transformation[id] = after_element.value[id];
 			}
 			transformations[name] = transformation;
-			AppendTransformationListItem(name, transformation);
+			document.getElementById('transformations_list').innerHTML = '';
+			for(let transformation_name in transformations){
+				AppendTransformationListItem(transformation_name, transformations[transformation_name]);
+			}
 		});
 		
 		document.getElementById('position_id').addEventListener('change', function(){
@@ -103,7 +106,6 @@
 			else{
 				this.value = position_id;
 			}
-			console.log(position_id);
 		});
 		document.getElementById('initial_point_of_view').addEventListener('change', function(){
 			if(this.value.length == 9){
@@ -112,7 +114,6 @@
 			else{
 				this.value = initial_point_of_view;
 			}
-			console.log(initial_point_of_view);
 		});
 		document.getElementById('center_point_of_view').addEventListener('change', function(){
 			if(this.value.length == 9){
@@ -121,7 +122,6 @@
 			else{
 				this.value = center_point_of_view;
 			}
-			console.log(center_point_of_view);
 		});
 		document.getElementById('middle_point_of_view').addEventListener('change', function(){
 			if(this.value.length == 9){
@@ -130,7 +130,6 @@
 			else{
 				this.value = middle_point_of_view;
 			}
-			console.log(middle_point_of_view);
 		});
 		document.getElementById('corner_point_of_view').addEventListener('change', function(){
 			if(this.value.length == 9){
@@ -139,7 +138,6 @@
 			else{
 				this.value = corner_point_of_view;
 			}
-			console.log(corner_point_of_view);
 		});
 
 		for(let transformation_name in transformations){

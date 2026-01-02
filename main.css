@@ -231,7 +231,7 @@ select{
 	display: inline;
 }
 
-.alignment_square.allowed{
+.alignment_cell.allowed{
 	background-color: rgb(42, 197, 101);
 }
 
