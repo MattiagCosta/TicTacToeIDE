@@ -52,6 +52,11 @@ input{
 	width: 12pt;
 }
 
+.three_chars_input{
+	text-align: center;
+	width: calc(12pt * 2);
+}
+
 .nine_chars_input{
 	text-align: center;
 	width: calc(12pt * 5);
@@ -64,11 +69,15 @@ header{
 	margin-bottom: 5px;
 }
 
+#title{
+	text-align: center;
+}
+
 #menu{
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	gap: 15px;
+	gap: 2px;
 }
 
 #references{

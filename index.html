@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<meta charset='utf-8'>
 	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
@@ -10,14 +10,14 @@
 </head>
 <body>
 	<header>
+		<h1 id="title">Tic-Tac-Toe IDE</h1>
+
 		<div id="menu">
-			<h1>Tic-Tac-Toe IDE</h1>
-			<div>
-				<button id="newTicTacToe">New</button>
-				<button id="deleteEveryTicTacToe" class="danger_button">Delete all</button>
-				<button id="toggleReferences">References</button>
-			</div>
+			<button id="newTicTacToe">New</button>
+			<button id="deleteEveryTicTacToe" class="danger_button">Delete all</button>
+			<button id="toggleReferences">References</button>
 		</div>
+
 		<div id="references" class="hidden">
 			<h2>Transformations</h2>
 			<ul id="transformations_list"></ul>
@@ -32,7 +32,31 @@
 				</div>
 				<button id="addTransformation">Add transformation</button>
 			</div>
-			
+
+			<h2>Statuses</h2>
+			<div>
+				<label for="empty_status">empty_status</label>
+				<input type="text" id="empty_status" value="0"  class="one_char_input" maxlength="1">
+			</div>
+			<div>
+				<label for="first_player_status">first_player_status</label>
+				<input type="text" id="first_player_status" value="1"  class="one_char_input" maxlength="1">
+			</div>
+			<div>
+				<label for="second_player_status">second_player_status</label>
+				<input type="text" id="second_player_status" value="2"  class="one_char_input" maxlength="1">
+			</div>
+
+			<h2>Alignments</h2>
+			<ul id="alignments_list"></ul>
+			<div id="addAlignmentDiv">
+				<div>
+					<label for="alignment">Alignment</label>
+					<input type="text" id="alignment" value="012" class="three_chars_input" maxlength="3">
+				</div>
+				<button id="addAlignment">Add alignment</button>
+			</div>
+
 			<h2>Point of views</h2>
 			<div>
 				<label for="position_id">position_id</label>
@@ -54,10 +78,10 @@
 				<label for="corner_point_of_view">corner_point_of_view</label>
 				<input type="text" id="corner_point_of_view" class="nine_chars_input" maxlength="9">
 			</div>
-			
+
 		</div>
 	</header>
-	
+
 	<main id="main"></main>
 	<script>
 		document.getElementById('newTicTacToe').addEventListener('click', function(){
@@ -84,18 +108,51 @@
 				name_element.value = 'custom';
 			}
 			const after_element = document.getElementById('transformationAfter');
-			if(after_element.value.length != 9){
+			if(!CheckAfter(after_element.value)){
 				after_element.value = '012345678';
 			}
 			const name = name_element.value;
-			let transformation = {};
-			for(let id of '012345678'){
-				transformation[id] = after_element.value[id];
+			const after = after_element.value;
+			transformations[name] = after;
+			AppendTransformationListItems();
+		});
+
+		document.getElementById('empty_status').addEventListener('change', function(){
+			if(this.value.length == 1){
+				empty_status = this.value;
 			}
-			transformations[name] = transformation;
-			document.getElementById('transformations_list').innerHTML = '';
-			for(let transformation_name in transformations){
-				AppendTransformationListItem(transformation_name, transformations[transformation_name]);
+			else{
+				this.value = empty_status;
+			}
+		});
+
+		document.getElementById('first_player_status').addEventListener('change', function(){
+			if(this.value.length == 1){
+				first_player_status = this.value;
+			}
+			else{
+				this.value = first_player_status;
+			}
+		});
+
+		document.getElementById('second_player_status').addEventListener('change', function(){
+			if(this.value.length == 1){
+				second_player_status = this.value;
+			}
+			else{
+				this.value = second_player_status;
+			}
+		});
+
+		document.getElementById('addAlignment').addEventListener('click', function(){
+			const alignment_element = document.getElementById('alignment');
+			if(!CheckAlignment(alignment_element.value)){
+				alignment_element.value = '012';
+			}
+			const alignment = alignment_element.value;
+			if(alignments.indexOf(alignment) == -1){
+				alignments.push(alignment);
+				AppendAlignmentListItems();
 			}
 		});
 		
@@ -140,9 +197,8 @@
 			}
 		});
 
-		for(let transformation_name in transformations){
-			AppendTransformationListItem(transformation_name, transformations[transformation_name]);
-		}
+		AppendTransformationListItems();
+		AppendAlignmentListItems();
 
 		document.getElementById('position_id').value = position_id;
 		document.getElementById('initial_point_of_view').value = initial_point_of_view;

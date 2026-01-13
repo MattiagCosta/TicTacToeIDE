@@ -11,21 +11,6 @@ const settings = [
 		targets:['.cell']
 	},
 	{
-		type:'Hide',
-		option:'hidden',
-		targets:['.control_div','.data_div','.transformations_div','.markers_div']
-	},
-	{
-		type:'Hide controls',
-		option:'hidden',
-		targets:['.undo_move_button','.clear_board_button']
-	},
-	{
-		type:'Hide data',
-		option:'hidden',
-		targets:['.numeric_sequence','.board','.alignments','.winner','.universal_sequence']
-	},
-	{
 		type:'Enable hover',
 		option:'hover',
 		targets:['.cell']
@@ -39,18 +24,37 @@ const settings = [
 		type:'Disable cursor',
 		option:'hidden_cursor',
 		targets:['.board_table']
+	},
+	{
+		type:'Hide',
+		option:'hidden',
+		targets:['.control_div','.data_div','.transformations_div','.markers_div']
+	},
+	{
+		type:'Hide controls',
+		option:'hidden',
+		targets:['.undo_move_button','.clear_board_button']
+	},
+	{
+		type:'Hide data',
+		option:'hidden',
+		targets:['.numeric_sequence','.board','.alignments','.winner','.universal_sequence']
 	}
 ];
 
 var transformations = {
-	'counterclockwise90rotation':{'0':'6','1':'3','2':'0','3':'7','4':'4','5':'1','6':'8','7':'5','8':'2'},
-	'clockwise90rotation':{'0':'2','1':'5','2':'8','3':'1','4':'4','5':'7','6':'0','7':'3','8':'6'},
-	'0reflection':{'0':'6','1':'7','2':'8','3':'3','4':'4','5':'5','6':'0','7':'1','8':'2'},
-	'90reflection':{'0':'2','1':'1','2':'0','3':'5','4':'4','5':'3','6':'8','7':'7','8':'6'},
-	'45reflection':{'0':'8','1':'5','2':'2','3':'7','4':'4','5':'1','6':'6','7':'3','8':'0'},
-	'135reflection':{'0':'0','1':'3','2':'6','3':'1','4':'4','5':'7','6':'2','7':'5','8':'8'}
+	'counterclockwise90rotation':'630741852',
+	'clockwise90rotation':'258147036',
+	'0reflection':'678345012',
+	'90reflection':'210543876',
+	'45reflection':'852741630',
+	'135reflection':'036147258'
 };
 
+var empty_status = '0';
+var first_player_status = '1';
+var second_player_status = '2';
+var alignments = ['012','036','258','678','345','147','048','246'];
 var position_id = 'P'
 var initial_point_of_view = 'CBCBABCBC';
 var center_point_of_view = 'EDEDPDEDE';
@@ -123,31 +127,87 @@ function FillInfoSettings(info){
 	}
 }
 
-function AppendTransformationListItem(transformation_name, transformation){
-	const li = document.createElement('li');
+function AppendTransformationListItems(){
+	document.getElementById('transformations_list').innerHTML = '';
+	for(let name in transformations){
+		const after = transformations[name]
 
-	const name_span = document.createElement('span');
-	name_span.innerHTML = transformation_name;
+		const li = document.createElement('li');
 
-	const transformation_span = document.createElement('span');
-	transformation_span.innerHTML = '012345678 → ';
-	for(let id in transformation){
-		transformation_span.innerHTML += transformation[id];
+		const name_span = document.createElement('span');
+		name_span.innerHTML = name;
+
+		const transformation_span = document.createElement('span');
+		transformation_span.innerHTML = '012345678 → ' + after;
+
+		const remove_button = document.createElement('button');
+		remove_button.classList.add('danger_button');
+		remove_button.innerHTML = 'Remove';
+		remove_button.addEventListener('click', function(){
+			delete transformations[name];
+			li.remove();
+		});
+
+		li.appendChild(name_span);
+		li.appendChild(transformation_span);
+		li.appendChild(remove_button);
+
+		document.getElementById('transformations_list').appendChild(li);
 	}
+}
 
-	const remove_button = document.createElement('button');
-	remove_button.classList.add('danger_button');
-	remove_button.innerHTML = 'Remove';
-	remove_button.addEventListener('click', function(){
-		delete transformations[transformation_name];
-		li.remove();
-	});
+function AppendAlignmentListItems(){
+	document.getElementById('alignments_list').innerHTML = '';
+	for(let alignment of alignments){
+		const li = document.createElement('li');
 
-	li.appendChild(name_span);
-	li.appendChild(transformation_span);
-	li.appendChild(remove_button);
+		const span = document.createElement('span');
+		span.innerHTML = alignment;
 
-	document.getElementById('transformations_list').appendChild(li);
+		const remove_button = document.createElement('button');
+		remove_button.classList.add('danger_button');
+		remove_button.innerHTML = 'Remove';
+		remove_button.addEventListener('click', function(){
+			alignments.splice(alignments.indexOf(alignment), 1);
+			li.remove();
+		});
+
+		li.appendChild(span);
+		li.appendChild(remove_button);
+
+		document.getElementById('alignments_list').appendChild(li);
+	}
+}
+
+function CheckNumericId(numeric_id){
+	if('012345678'.includes(numeric_id)){
+		return true;
+	}
+	return false;
+}
+
+function CheckAfter(after){
+	if(after.length != 9){
+		return false;
+	}
+	for(let id of after){
+		if(!CheckNumericId(id)){
+			return false;
+		}
+	}
+	return true;
+}
+
+function CheckAlignment(alignment){
+	if(alignment.length != 3){
+		return false;
+	}
+	for(let id of alignment){
+		if(!CheckNumericId(id)){
+			return false;
+		}
+	}
+	return true;
 }
 
 function RotatePointOfView(point_of_view){
@@ -248,10 +308,10 @@ class TicTacToe{
 		this.info.numeric_sequence = this.info.numeric_sequence.substring(0, this.info.numeric_sequence.length - 1);
 	}
 
-	ChangeNumericSequence(rules){
+	ChangeNumericSequence(after){
 		let new_numeric_sequence = '';
 		for(let move of this.info.numeric_sequence){
-			new_numeric_sequence += rules[move];
+			new_numeric_sequence += after[move];
 		}
 		this.info.numeric_sequence = new_numeric_sequence;
 	}
@@ -266,63 +326,39 @@ class TicTacToe{
 		let board = '';
 		for(let i = 0; i < 9; i++){
 			if(numeric_sequence.includes(i)){
-				board += numeric_sequence.indexOf(i) % 2 + 1;
+				board += numeric_sequence.indexOf(i) % 2 == 0 ? first_player_status : second_player_status;
 			}
 			else{
-				board += '0';
+				board += empty_status;
 			}
 		}
 		return board
 	}
 
 	GetAlignments(numeric_sequence){
-		if(numeric_sequence.length < 5){
-			return [];
-		}
 		const board = this.GetBoard(numeric_sequence);
-		let alignments = [];
-		if(board[0] == board[1] && board[1] == board[2] && board[0] != '0'){
-			alignments.push('012');
+		let alignments_made = [];
+		for(let alignment of alignments){
+			if(board[alignment[0]] == board[alignment[1]] && board[alignment[1]] == board[alignment[2]] && board[alignment[0]] != empty_status){
+				alignments_made.push(alignment);
+			}
 		}
-		if(board[0] == board[3] && board[3] == board[6] && board[0] != '0'){
-			alignments.push('036');
-		}
-		if(board[2] == board[5] && board[5] == board[8] && board[8] != '0'){
-			alignments.push('258');
-		}
-		if(board[6] == board[7] && board[6] == board[8] && board[8] != '0'){
-			alignments.push('678');
-		}
-		if(board[3] == board[4] && board[4] == board[5] && board[4] != '0'){
-			alignments.push('345');
-		}
-		if(board[1] == board[4] && board[4] == board[7] && board[4] != '0'){
-			alignments.push('147');
-		}
-		if(board[0] == board[4] && board[4] == board[8] && board[4] != '0'){
-			alignments.push('048');
-		}
-		if(board[2] == board[4] && board[4] == board[6] && board[4] != '0'){
-			alignments.push('246');
-		}
-		return alignments;
+		return alignments_made;
 	}
 
 	GetWinner(){
 		let winner = 'None';
-		if(this.info.numeric_sequence >= 5){
-			for(let n = 6; n <= this.info.numeric_sequence.length + 1; n++){
-				let subsequence = this.info.numeric_sequence.substring(0, n);
-				const alignments = this.GetAlignments(subsequence);
-				if(alignments[0]){
-					const board = this.GetBoard(this.info.numeric_sequence);
-					winner = (board[alignments[0][0]] == '1') ? 'First player' : 'Second player';
-					break;
-				}
+		for(let n = 0; n <= this.info.numeric_sequence.length + 1; n++){
+			let subsequence = this.info.numeric_sequence.substring(0, n);
+			const alignments = this.GetAlignments(subsequence);
+			if(alignments[0]){
+				const board = this.GetBoard(this.info.numeric_sequence);
+				winner = (board[alignments[0][0]] == first_player_status) ? 'First player' : 'Second player';
+				break;
 			}
-			if(winner == 'None' && this.info.numeric_sequence.length == 9){
-				winner = 'Tie';
-			}
+		}
+		if(winner == 'None' && this.info.numeric_sequence.length == 9){
+			winner = 'Tie';
 		}
 		return winner;
 	}
@@ -654,13 +690,13 @@ class TicTacToe{
 			cell.classList.remove('taken');
 			cell.classList.remove('alignment_cell');
 			let marker = this.info.empty;
-			if(board[i] != '0'){
+			if(board[i] != empty_status){
 				cell.classList.add('taken');
 			}
-			if(board[i] == '1'){
+			if(board[i] == first_player_status){
 				marker = this.info.first_player;
 			}
-			else if(board[i] == '2'){
+			else if(board[i] == second_player_status){
 				marker = this.info.second_player;
 			}
 			cell.innerHTML = marker;
