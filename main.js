@@ -2,7 +2,7 @@ var id_prefix = 'Tic-Tac-Toe-';
 var id_number = 0;
 var TicTacToe_list = [];
 
-const default_info = {empty:'',first_player:'X',second_player:'O',numeric_sequence:'',body_div_visibility:true,settings_div_visibility:false,settings:[],number_of_transformations:0};
+const default_info = {empty:'',first_player:'X',second_player:'O',numeric_sequence:'',body_div_visibility:true,settings_div_visibility:false,settings:[],number_of_transformations:0,name:null,duplicate_id_number:0};
 
 const settings = [
 	{
@@ -60,6 +60,7 @@ var initial_point_of_view = 'CBCBABCBC';
 var center_point_of_view = 'EDEDPDEDE';
 var middle_point_of_view = 'HPHIGIJFJ';
 var corner_point_of_view = 'PMNMKONOL';
+var partition = '-';
 
 function AddTicTacToe(id, info = null){
 	TicTacToe_list.push(new TicTacToe(id, info ? info : undefined));
@@ -264,7 +265,7 @@ function CreateUniversalSequence(numeric_sequence){
 	let point_of_views = [initial_point_of_view];
 	for(let move of numeric_sequence){
 		if(point_of_views.length > 1){
-			universal_sequence += '-';
+			universal_sequence += partition;
 		}
 		for(let point_of_view of point_of_views){
 			universal_sequence += point_of_view[move];
@@ -286,6 +287,7 @@ class TicTacToe{
 	constructor(id, info = structuredClone(default_info)){
 		this.id = id
 		FillInfoSettings(info);
+		info.duplicate_id_number = 0;
 		this.info = info;
 		this.AppendDiv(id);
 		this.Update();
@@ -374,8 +376,11 @@ class TicTacToe{
 
 		const name = document.createElement('p');
 		name.classList.add('name');
-		name.innerHTML = id;
+		name.innerHTML = this.info.name ? this.info.name : this.id;
 		name.contentEditable = true;
+		name.addEventListener('focusout', function(){
+			t.info.name = this.innerHTML;
+		});
 
 		const toggle_button = document.createElement('button');
 		toggle_button.classList.add('toggle_button');
@@ -417,7 +422,8 @@ class TicTacToe{
 		duplicate_button.classList.add('duplicate_button');
 		duplicate_button.innerHTML = 'Duplicate';
 		duplicate_button.addEventListener('click', function(){
-			DuplicateTicTacToeDefaultId(t.id);
+			DuplicateTicTacToe(t.id, t.id + '-' + t.info.duplicate_id_number);
+			t.info.duplicate_id_number++;
 		});
 
 		const reset_button = document.createElement('button');

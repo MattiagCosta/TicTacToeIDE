@@ -78,6 +78,10 @@
 				<label for="corner_point_of_view">corner_point_of_view</label>
 				<input type="text" id="corner_point_of_view" class="nine_chars_input" maxlength="9">
 			</div>
+			<div>
+				<label for="partition">partition</label>
+				<input type="text" id="partition" class="one_char_input" maxlength="1">
+			</div>
 
 		</div>
 	</header>
@@ -196,6 +200,14 @@
 				this.value = corner_point_of_view;
 			}
 		});
+		document.getElementById('partition').addEventListener('change', function(){
+			if(this.value.length == 1){
+				partition = this.value;
+			}
+			else{
+				this.value = partition;
+			}
+		});
 
 		AppendTransformationListItems();
 		AppendAlignmentListItems();
@@ -205,6 +217,7 @@
 		document.getElementById('center_point_of_view').value = center_point_of_view;
 		document.getElementById('middle_point_of_view').value = middle_point_of_view;
 		document.getElementById('corner_point_of_view').value = corner_point_of_view;
+		document.getElementById('partition').value = partition;
 
 		AddTicTacToeDefaultId();
 	</script>
